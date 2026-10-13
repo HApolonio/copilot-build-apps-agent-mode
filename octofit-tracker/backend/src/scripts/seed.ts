@@ -15,9 +15,13 @@ async function seedDatabase() {
       { username: 'ava.moves', email: 'ava@example.com' },
     ];
     const users = await Promise.all(
-      userData.map(({ email, ...user }) =>
-        User.findOneAndUpdate({ email }, user, { upsert: true, new: true, runValidators: true }),
-      ),
+      userData.map(async ({ email, ...user }) => {
+        const existingUser = await User.findOne({ email });
+        if (!existingUser) {
+          return User.create({ email, ...user });
+        }
+        return User.findOneAndUpdate({ email }, user, { new: true, runValidators: true });
+      }),
     );
     const [maya, liam, ava] = users;
 
@@ -26,9 +30,13 @@ async function seedDatabase() {
       { name: 'Strength Squad', members: [liam._id, ava._id] },
     ];
     await Promise.all(
-      teamData.map(({ name, ...team }) =>
-        Team.findOneAndUpdate({ name }, team, { upsert: true, new: true, runValidators: true }),
-      ),
+      teamData.map(async ({ name, ...team }) => {
+        const existingTeam = await Team.findOne({ name });
+        if (!existingTeam) {
+          return Team.create({ name, ...team });
+        }
+        return Team.findOneAndUpdate({ name }, team, { new: true, runValidators: true });
+      }),
     );
 
     const activities = [
@@ -37,13 +45,14 @@ async function seedDatabase() {
       { user: ava._id, type: 'Cycling', duration: 45, date: new Date('2026-10-11T08:15:00.000Z') },
     ];
     await Promise.all(
-      activities.map(({ user, type, date, ...activity }) =>
-        Activity.findOneAndUpdate(
-          { user, type, date },
-          activity,
-          { upsert: true, new: true, runValidators: true },
-        ),
-      ),
+      activities.map(async ({ user, type, date, ...activity }) => {
+        const filter = { user, type, date };
+        const existingActivity = await Activity.findOne(filter);
+        if (!existingActivity) {
+          return Activity.create({ ...filter, ...activity });
+        }
+        return Activity.findOneAndUpdate(filter, activity, { new: true, runValidators: true });
+      }),
     );
 
     const leaderboardEntries = [
@@ -52,13 +61,13 @@ async function seedDatabase() {
       { user: liam._id, points: 310 },
     ];
     await Promise.all(
-      leaderboardEntries.map(({ user, points }) =>
-        Leaderboard.findOneAndUpdate(
-          { user },
-          { points },
-          { upsert: true, new: true, runValidators: true },
-        ),
-      ),
+      leaderboardEntries.map(async ({ user, points }) => {
+        const existingEntry = await Leaderboard.findOne({ user });
+        if (!existingEntry) {
+          return Leaderboard.create({ user, points });
+        }
+        return Leaderboard.findOneAndUpdate({ user }, { points }, { new: true, runValidators: true });
+      }),
     );
 
     const workouts = [
@@ -79,9 +88,13 @@ async function seedDatabase() {
       },
     ];
     await Promise.all(
-      workouts.map(({ name, ...workout }) =>
-        Workout.findOneAndUpdate({ name }, workout, { upsert: true, new: true, runValidators: true }),
-      ),
+      workouts.map(async ({ name, ...workout }) => {
+        const existingWorkout = await Workout.findOne({ name });
+        if (!existingWorkout) {
+          return Workout.create({ name, ...workout });
+        }
+        return Workout.findOneAndUpdate({ name }, workout, { new: true, runValidators: true });
+      }),
     );
 
     console.log('Database seeding complete');
