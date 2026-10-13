@@ -93,7 +93,7 @@ export const checks = {
     for (const resource of resources) {
       const modelName = resourceModels[resource];
       assertValid(
-        new RegExp(`\\b${modelName}\\s*\\.\\s*(?:insertMany|create)\\s*\\(`, 'i').test(seed) ||
+        new RegExp(`\\b${modelName}\\s*\\.\\s*(?:insertMany|create|findOneAndUpdate)\\s*\\(`, 'i').test(seed) ||
           new RegExp(`new\\s+${modelName}\\s*\\([^)]*\\)\\s*\\.\\s*save\\s*\\(`, 'is').test(seed),
         `Seed script does not write ${resource} data`,
       );
