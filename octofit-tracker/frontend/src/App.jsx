@@ -1,9 +1,9 @@
 import { NavLink, Route, Routes } from 'react-router-dom'
-import Activities from './Activities.jsx'
-import Leaderboard from './Leaderboard.jsx'
-import Teams from './Teams.jsx'
-import Users from './Users.jsx'
-import Workouts from './Workouts.jsx'
+import Activities from './components/Activities.jsx'
+import Leaderboard from './components/Leaderboard.jsx'
+import Teams from './components/Teams.jsx'
+import Users from './components/Users.jsx'
+import Workouts from './components/Workouts.jsx'
 
 function App() {
   return (

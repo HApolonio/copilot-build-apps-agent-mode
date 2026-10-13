@@ -1,28 +1,30 @@
 import { useEffect, useState } from 'react'
-import { apiBaseUrl } from './config/api.js'
+import { apiBaseUrl } from '../config/api.js'
+import { readCollection } from './readCollection.js'
 
-function Activities() {
-  const [activities, setActivities] = useState([])
+function Teams() {
+  const [teams, setTeams] = useState([])
   const [error, setError] = useState('')
 
   useEffect(() => {
-    fetch(`${apiBaseUrl}/api/activities/`)
+    fetch(`${apiBaseUrl}/api/teams/`)
       .then((response) => {
         if (!response.ok) throw new Error(`Request failed: ${response.status}`)
         return response.json()
       })
-      .then(setActivities)
+      .then(readCollection)
+      .then(setTeams)
       .catch((requestError) => setError(requestError.message))
   }, [])
 
   return (
     <section>
-      <h2>Activities</h2>
+      <h2>Teams</h2>
       {error && <p className="alert alert-danger" role="alert">{error}</p>}
       <ul className="list-group">
-        {activities.map((activity) => (
-          <li className="list-group-item" key={activity._id}>
-            {activity.user.username} · {activity.type} · {activity.duration} min
+        {teams.map((team) => (
+          <li className="list-group-item" key={team._id}>
+            {team.name} · {Array.isArray(team.members) ? team.members.length : 0} members
           </li>
         ))}
       </ul>
@@ -30,4 +32,4 @@ function Activities() {
   )
 }
 
-export default Activities
+export default Teams

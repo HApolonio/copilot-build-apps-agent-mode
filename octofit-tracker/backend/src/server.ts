@@ -10,6 +10,30 @@ const port = Number(process.env.PORT ?? 8000);
 
 const app = express();
 
+app.use((request, response, next) => {
+  const origin = request.header('Origin');
+  const isLocalFrontend = origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173';
+  const isCodespacesFrontend =
+    Boolean(codespaceName) && origin === `https://${codespaceName}-5173.app.github.dev`;
+
+  if (origin && (isLocalFrontend || isCodespacesFrontend)) {
+    response.setHeader('Access-Control-Allow-Origin', origin);
+    response.setHeader('Vary', 'Origin');
+    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    response.setHeader(
+      'Access-Control-Allow-Headers',
+      request.header('Access-Control-Request-Headers') ?? 'Content-Type, Authorization',
+    );
+  }
+
+  if (request.method === 'OPTIONS') {
+    response.sendStatus(origin && (isLocalFrontend || isCodespacesFrontend) ? 204 : 403);
+    return;
+  }
+
+  next();
+});
+
 app.use(express.json());
 app.use(apiRouter);
 

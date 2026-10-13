@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { apiBaseUrl } from './config/api.js'
+import { apiBaseUrl } from '../config/api.js'
+import { readCollection } from './readCollection.js'
 
 function Users() {
   const [users, setUsers] = useState([])
@@ -11,6 +12,7 @@ function Users() {
         if (!response.ok) throw new Error(`Request failed: ${response.status}`)
         return response.json()
       })
+      .then(readCollection)
       .then(setUsers)
       .catch((requestError) => setError(requestError.message))
   }, [])
@@ -20,7 +22,9 @@ function Users() {
       <h2>Users</h2>
       {error && <p className="alert alert-danger" role="alert">{error}</p>}
       <ul className="list-group">
-        {users.map((user) => <li className="list-group-item" key={user._id}>{user.username} · {user.email}</li>)}
+        {users.map((user) => (
+          <li className="list-group-item" key={user._id}>{user.username} · {user.email}</li>
+        ))}
       </ul>
     </section>
   )

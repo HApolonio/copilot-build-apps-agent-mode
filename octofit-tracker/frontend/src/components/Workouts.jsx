@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { apiBaseUrl } from './config/api.js'
+import { apiBaseUrl } from '../config/api.js'
+import { readCollection } from './readCollection.js'
 
 function Workouts() {
   const [workouts, setWorkouts] = useState([])
@@ -11,6 +12,7 @@ function Workouts() {
         if (!response.ok) throw new Error(`Request failed: ${response.status}`)
         return response.json()
       })
+      .then(readCollection)
       .then(setWorkouts)
       .catch((requestError) => setError(requestError.message))
   }, [])
